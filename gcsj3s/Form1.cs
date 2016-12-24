@@ -35,10 +35,12 @@ namespace gcsj3s
             cbxBps.SelectedIndex = 7;
 
             tbxTemp.Text = "";
+            tbxTempTime.Text = "";
             tbxGas.Text = "";
             tbxGasTime.Text = "";
 
             tbxTemp.ReadOnly = true;
+            tbxTempTime.ReadOnly = true;
             tbxGas.ReadOnly = true;
             tbxGasTime.ReadOnly = true;
 
@@ -109,14 +111,18 @@ namespace gcsj3s
         private void btnClearBuf_Click(object sender, EventArgs e)//清空显示缓冲
         {
             tbxTemp.Text = "";
+            tbxTempTime.Text = "";
             tbxGas.Text = "";
             tbxGasTime.Text = "";
         }
 
         private void btnEsc_Click(object sender, EventArgs e)//退出
         {
-            newclient.Shutdown(SocketShutdown.Both);
-            newclient.Close();
+            if (!newclient.Poll(10, SelectMode.SelectRead))
+            {
+                newclient.Shutdown(SocketShutdown.Both);
+                newclient.Close();
+            }
             this.Close();
         }
 
@@ -134,14 +140,15 @@ namespace gcsj3s
                 Regex expressions2 = new Regex(@"\d\d");
                 Match match2 = expressions2.Match(buf);
                 String temp = match2.ToString();        //得到温度数据的字符串格式
-                tbxTemp.Text = tbxTemp.Text + temp + "\r\n";
+                tbxTemp.Text = temp + "\r\n" + tbxTemp.Text;
 
                 String time = DateTime.Now.ToString("yyyy-MM-dd  hh:mm:ss");  //获取当前接受到的数据的时间
-                tbxTempTime.Text = tbxTempTime.Text + time + "\r\n";
+                tbxTempTime.Text = time + "\r\n" + tbxTempTime.Text;
 
                 String frame = deviceId + temp + time;  //组装成帧
-                if(isSend)
+                if (isSend)
                     sendMsg(frame);//发送
+ 
             }
             else
             {
@@ -153,15 +160,14 @@ namespace gcsj3s
                 Regex expressions2 = new Regex(@"\d\d\d");
                 Match match2 = expressions2.Match(buf);
                 String gas = match2.ToString();  //得到气体数据的字符串格式
-                tbxGas.Text = tbxGas.Text + gas + "\r\n";
+                tbxGas.Text = gas + "\r\n" + tbxGas.Text;
 
                 String time = DateTime.Now.ToString("yyyy-MM-dd  hh:mm:ss");  //获取当前接受到的数据的时间
-                tbxGasTime.Text = tbxGasTime.Text + time + "\r\n";
+                tbxGasTime.Text = time + "\r\n" + tbxGasTime.Text ;
 
                 String frame = deviceId + gas + time;  //组装成帧
                 if (isSend)
                     sendMsg(frame);//发送
-
             }
         }
 
@@ -191,7 +197,17 @@ namespace gcsj3s
         {
             data = new byte[1024];
             data = Encoding.ASCII.GetBytes(msg);
-            newclient.Send(data);
+            try
+            {
+                newclient.Send(data);//发送
+            }
+            catch (Exception ex)
+            {
+                newclient.Shutdown(SocketShutdown.Both);
+                newclient.Close();
+                isSend = false;   //出错不再发送
+                MessageBox.Show(ex.ToString());
+            }
             tbxIP.Enabled = false;
             btnCon.Enabled = false;
         }
