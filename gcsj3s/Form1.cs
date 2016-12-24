@@ -138,7 +138,7 @@ namespace gcsj3s
                 String temp = match2.ToString();        //得到温度数据的字符串格式
                 tbxTemp.Text = temp + "\r\n" + tbxTemp.Text;
 
-                String time = DateTime.Now.ToString("yyyy-MM-dd  hh:mm:ss");  //获取当前接受到的数据的时间
+                String time = DateTime.Now.ToString("yyyy-MM-dd  HH:mm:ss");  //获取当前接受到的数据的时间
                 tbxTempTime.Text = time + "\r\n" + tbxTempTime.Text;
 
                 String frame = deviceId + temp + time;  //组装成帧
@@ -158,7 +158,7 @@ namespace gcsj3s
                 String gas = match2.ToString();  //得到气体数据的字符串格式
                 tbxGas.Text = gas + "\r\n" + tbxGas.Text;
 
-                String time = DateTime.Now.ToString("yyyy-MM-dd  hh:mm:ss");  //获取当前接受到的数据的时间
+                String time = DateTime.Now.ToString("yyyy-MM-dd  HH:mm:ss");  //获取当前接受到的数据的时间
                 tbxGasTime.Text = time + "\r\n" + tbxGasTime.Text ;
 
                 String frame = deviceId + gas + time;  //组装成帧
