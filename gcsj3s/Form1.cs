@@ -11,6 +11,7 @@ using System.IO.Ports;//需要引入命名的空间
 using System.Text.RegularExpressions;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 
 namespace gcsj3s
 {
@@ -19,7 +20,6 @@ namespace gcsj3s
         bool isOpen = false;//打开串口标志位
         bool isSend = false;//是否通过TCP连接发送
 
-        byte[] data = new byte[1024];
         Socket newclient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         public Form1()
@@ -118,11 +118,7 @@ namespace gcsj3s
 
         private void btnEsc_Click(object sender, EventArgs e)//退出
         {
-            if (!newclient.Poll(10, SelectMode.SelectRead))
-            {
-                newclient.Shutdown(SocketShutdown.Both);
-                newclient.Close();
-            }
+            newclient.Close();
             this.Close();
         }
 
@@ -171,10 +167,29 @@ namespace gcsj3s
             }
         }
 
+        private String Encrypt(String encryptStr)  //AES加密函数
+        {
+            byte[] keyArray = UTF8Encoding.UTF8.GetBytes("12345678901234567890123456789012");  //密钥
+            byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(encryptStr);
+            RijndaelManaged rDel = new RijndaelManaged();
+            rDel.Key = keyArray;
+            rDel.Mode = CipherMode.ECB;
+            rDel.Padding = PaddingMode.PKCS7;
+            ICryptoTransform cTransform = rDel.CreateEncryptor();  //创建加密器
+            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
+            return Convert.ToBase64String(resultArray, 0, resultArray.Length);  //返回加密后的字符串
+        }
 
         private void estbCon()  //TCP建立连接函数
         {
+            byte[] buf = new byte[1024];
             String ip = tbxIP.Text;
+            if (tbxIP.Text == "")
+            {
+                MessageBox.Show("请输入ip地址");
+                return;
+            }
+
             int port = 9050;
             IPEndPoint ie = new IPEndPoint(IPAddress.Parse(ip), port);//服务器的IP和端口  
             try
@@ -187,16 +202,18 @@ namespace gcsj3s
                 MessageBox.Show(ex.ToString());
                 return;
             }
-            int recvlen = newclient.Receive(data);
-            string stringdata = Encoding.ASCII.GetString(data, 0, recvlen);
+            int recvlen = newclient.Receive(buf);
+            string stringdata = Encoding.ASCII.GetString(buf, 0, recvlen);
             tbxConInfo.Text = tbxConInfo.Text + stringdata + "\r\n";
 
         }
 
         private void sendMsg(String msg)  //TCP发送函数
         {
-            data = new byte[1024];
-            data = Encoding.ASCII.GetBytes(msg);
+
+            byte[] data = new byte[1024];
+            data = Encoding.ASCII.GetBytes(Encrypt(msg));  //调用AES函数加密要发送的信息
+
             try
             {
                 newclient.Send(data);//发送
