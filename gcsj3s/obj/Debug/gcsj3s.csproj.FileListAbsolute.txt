@@ -16,3 +16,6 @@ E:\实践工程\工程实践4 v1\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.csp
 E:\实践工程\工程实践4 v1\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.Form1.resources
 E:\实践工程\工程实践4 v1\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.Properties.Resources.resources
 E:\实践工程\工程实践4 v1\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.csproj.GenerateResource.Cache
+E:\实践工程\工程实践4 v2\实践代码\gcsj3s\gcsj3s\bin\Debug\gcsj3s.exe.config
+E:\实践工程\工程实践4 v2\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.exe
+E:\实践工程\工程实践4 v2\实践代码\gcsj3s\gcsj3s\obj\Debug\gcsj3s.pdb
