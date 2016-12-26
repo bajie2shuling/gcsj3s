@@ -25,6 +25,8 @@ namespace gcsj3s
         public Form1()
         {
             InitializeComponent();
+            //指定不再捕获对错误线程的调用
+            Control.CheckForIllegalCrossThreadCalls = false;
         }
 
 
@@ -43,6 +45,8 @@ namespace gcsj3s
             tbxTempTime.ReadOnly = true;
             tbxGas.ReadOnly = true;
             tbxGasTime.ReadOnly = true;
+
+            tbxIP.Text = "127.0.0.1";
 
         }
 
